@@ -34,5 +34,5 @@ public interface ConnectionMonitor
 	public void connectionLost(Throwable reason);
 	
 	
-	public void onReceiveInfo(int infoId, String infoMsg)
+	public void onReceiveInfo(int infoId, String infoMsg);
 }
