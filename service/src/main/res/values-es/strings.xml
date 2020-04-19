@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+  tools:ignore="MissingTranslation">
 
 	<string name="app_name">SocksHttp</string>
     <string name="app_description">SocksHttp es un cliente SSH TÚNNEL, utilizadl para saltar bloqueos locales y censura de la red.</string>
