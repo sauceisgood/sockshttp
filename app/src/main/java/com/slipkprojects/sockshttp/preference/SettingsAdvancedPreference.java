@@ -116,7 +116,7 @@ public class SettingsAdvancedPreference extends PreferenceFragmentCompat
 	{
 		switch(pref.getKey()) {
 			case MODO_DEBUG_KEY:
-				boolean isDebug = newValue;
+				boolean isDebug = (boolean) newValue;
 
 				if (isDebug) {
 					Toast.makeText(getContext(), "Desative após terminar os testes",
@@ -125,7 +125,7 @@ public class SettingsAdvancedPreference extends PreferenceFragmentCompat
 			break;
 
 			case FILTER_APPS:
-				boolean isEnabled = newValue;
+				boolean isEnabled = (boolean) newValue;
 				
 				enableFilterLayout(isEnabled);
 			break;

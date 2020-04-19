@@ -168,7 +168,7 @@ public class SettingsPreference extends PreferenceFragmentCompat
 	{
 		switch (pref.getKey()) {
 			case UDPFORWARD_KEY:
-				boolean isUdpForward = newValue;
+				boolean isUdpForward = (boolean) newValue;
 
 				Preference udpResolverPreference = (EditTextPreference)
 					findPreference(UDPRESOLVER_KEY);
@@ -176,7 +176,7 @@ public class SettingsPreference extends PreferenceFragmentCompat
 			break;
 			
 			case DNSFORWARD_KEY:
-				boolean isDnsForward = newValue;
+				boolean isDnsForward = (boolean) newValue;
 
 				Preference dnsResolverPreference = (EditTextPreference)
 					findPreference(DNSRESOLVER_KEY);
