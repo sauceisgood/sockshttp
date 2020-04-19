@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-	buildToolsVersion "21.+"
+    compileSdkVersion 24
+	buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "com.slipkprojects.sockshttp"
@@ -30,21 +30,21 @@ dependencies {
     }*/
 	
 	// support libs
-    api 'com.android.support:appcompat-v7:25.+'
-	api 'com.android.support:preference-v7:25.+'
-	api 'com.android.support:design:25.+'
+    compile 'com.android.support:appcompat-v7:25.+'
+	compile 'com.android.support:preference-v7:25.+'
+	compile 'com.android.support:design:25.+'
 	
 	// outros
-	api 'com.android.support.constraint:constraint-layout:1.0.2'
-	api 'com.google.android.gms:play-services-ads-lite:11.8.0'
+	compile 'com.android.support.constraint:constraint-layout:1.0.2'
+	compile 'com.google.android.gms:play-services-ads-lite:11.8.0'
 	
 	//11.8.0
 	//api 'com.scottyab:secure-preferences-lib:0.1.7'
 	//api 'com.google.android.gms:play-services-ads-lite:17.2.1'
-	api 'com.flurry.android:analytics:12.3.0@aar'
+	compile 'com.flurry.android:analytics:12.3.0@aar'
 	//api 'com.flurry.android:analytics:12.1.0@aar'
 	//api 'com.android.support:multidex:1.0.3'
 	
-	api project(':service')
-	api project(':style')
+	compile project(':service')
+	compile project(':style')
 }

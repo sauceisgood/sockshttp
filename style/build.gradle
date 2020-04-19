@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "com.slipkprojects.compatstyle"
@@ -22,6 +22,6 @@ android {
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
 	
-	api 'com.android.support:appcompat-v7:25.+'
+	compile 'com.android.support:appcompat-v7:25.+'
 	
 }
