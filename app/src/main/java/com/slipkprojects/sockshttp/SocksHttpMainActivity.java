@@ -95,8 +95,7 @@ import android.widget.ArrayAdapter;
 public class SocksHttpMainActivity extends BaseActivity
 	implements DrawerLayout.DrawerListener,
 			View.OnClickListener, RadioGroup.OnCheckedChangeListener,
-				CompoundButton.OnCheckedChangeListener, SkStatus.StateListener,
-					DialogInterface.OnClickListener
+				CompoundButton.OnCheckedChangeListener, SkStatus.StateListener
 {
 	private static final String TAG = SocksHttpMainActivity.class.getSimpleName();
 	private static final String UPDATE_VIEWS = "MainUpdate";
@@ -615,19 +614,14 @@ public class SocksHttpMainActivity extends BaseActivity
 		new AlertDialog.Builder(this)
             . setTitle(R.string.attention)
             . setMessage(R.string.first_start_msg)
-			. setPositiveButton(R.string.ok, this)
+			. setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface di, int p) {
+					// ok
+				}
+			})
 			. setCancelable(false)
             . show();
-	}
-
-	@Override
-	public void onClick(DialogInterface p1, int p2)
-	{
-		switch (p2) {
-			case p1.BUTTON_POSITIVE:
-				// tudo ok
-				break;
-		}
 	}
 	
 	@Override
