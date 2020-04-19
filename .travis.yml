@@ -1,6 +1,5 @@
 language: android
 jdk: oraclejdk8
-sudo: false
 
 android:
   components:
@@ -11,4 +10,13 @@ android:
     - sys-img-armeabi-v7a-android-28
     - extra-android-m2repository
 
-script: ./gradlew connectedAndroidTest
+script: ./gradlew build assembleRelease
+
+deploy:
+  - provider: releases
+    api_key:
+      6322bb1898cc3e83ca6902b9f08e78cd922403a5
+    file: app/build/outputs/apk/app-release.apk
+    on:
+      repo: SlipkHunter/SocksHttp
+      tags: true
