@@ -15,7 +15,6 @@
 	<string name="title_login_main">Detalles de Login</string>
 	
 	<!-- Preference -->
-	<string name="ssh_server">Servidor SSH</string>
 	<string name="category_forward_udp">Redireccionamiento de Udp</string>
 	<string name="title_forward_udp">Redireccionar UDP</string>
 	<string name="summary_forward_udp">Se activo redirecionamiento para el servidor remoto. Si no, UDP no funcionara.</string>

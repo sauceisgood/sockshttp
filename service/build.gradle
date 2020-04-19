@@ -46,6 +46,6 @@ dependencies {
 	
 	//api 'com.github.hussainderry:secure-preferences:4.0.0'
 	
-	//compile project(':style')
+	compile project(':style')
 	
 }
