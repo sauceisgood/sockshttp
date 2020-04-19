@@ -45,6 +45,6 @@ dependencies {
 	//api 'com.flurry.android:analytics:12.1.0@aar'
 	//api 'com.android.support:multidex:1.0.3'
 	
-	compile project(':service')
-	compile project(':style')
+	//compile project(':service')
+	//compile project(':style')
 }
