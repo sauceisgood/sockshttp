@@ -11,11 +11,4 @@ android:
     - sys-img-armeabi-v7a-android-28
     - extra-android-m2repository
 
-before_script:
-  # Create and start emulator
-  - echo no | android create avd --force -n test -t android-28
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
-
 script: ./gradlew connectedAndroidTest
