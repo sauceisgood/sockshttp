@@ -4,6 +4,10 @@
 
     <application>
       
+		<activity
+            android:name=".NotImplemented"
+        />
+		
     </application>
 
 </manifest>
