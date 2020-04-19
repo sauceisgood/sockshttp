@@ -21,7 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import com.slipkprojects.ultrasshservice.R;
+import com.slipkprojects.sockshttp.R;
 import android.text.Html;
 import com.slipkprojects.ultrasshservice.config.Settings;
 import android.view.MotionEvent;
@@ -76,7 +76,7 @@ public class LogsAdapter extends RecyclerView.Adapter<LogsAdapter.logViewHolder>
 		{ 
 			super(itemView);
 
-			this.textLog = itemView.findViewById(R.id.textLog);
+			this.textLog = (TextView) itemView.findViewById(R.id.textLog);
 		} 
 	}
 
@@ -124,8 +124,7 @@ public class LogsAdapter extends RecyclerView.Adapter<LogsAdapter.logViewHolder>
 	@Override
 	public logViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
 	{
-		Context context = parent.getContext(); 
-		LayoutInflater inflater = LayoutInflater.from(context); 
+		LayoutInflater inflater = LayoutInflater.from(parent.getContext()); 
 
 		View logView = inflater.inflate(R.layout.list_item_log_drawer, 
 			parent, false);
