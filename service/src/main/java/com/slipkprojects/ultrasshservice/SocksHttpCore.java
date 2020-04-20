@@ -27,8 +27,8 @@ public class SocksHttpCore
 		//throw new RuntimeException();
 		TopExceptionHandler.init(mContext);
 		
-		//if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-          //  createNotificationChannels();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createNotificationChannels();
 	}
 	
 	@TargetApi(Build.VERSION_CODES.O)

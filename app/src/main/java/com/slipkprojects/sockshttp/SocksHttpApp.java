@@ -70,7 +70,7 @@ public class SocksHttpApp extends Application
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		LocaleHelper.setLocale(this);
+		//LocaleHelper.setLocale(this);
 	}
 	
 	private void setModoNoturno(Context context) {

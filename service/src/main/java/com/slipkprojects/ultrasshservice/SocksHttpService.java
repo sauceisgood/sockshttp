@@ -44,27 +44,27 @@ import android.net.LinkAddress;
 import android.net.Network;
 import android.net.LinkProperties;
 import com.slipkprojects.ultrasshservice.util.DummyActivity;
+import android.graphics.Color;
 
 public class SocksHttpService extends Service
-	implements SkStatus.StateListener
+implements SkStatus.StateListener
 {
 	private static final String TAG = SocksHttpService.class.getSimpleName();
 	public static final String START_SERVICE = "com.slipkprojects.sockshttp:startTunnel";
-	
+
 	private static final int PRIORITY_MIN = -2;
     private static final int PRIORITY_DEFAULT = 0;
     private static final int PRIORITY_MAX = 2;
-    
-	private boolean mNotificationShowing = false;
+
 	private NotificationManager mNotificationManager;
-	
+
 	private Handler mHandler;
 	private Settings mPrefs;
 	private Thread mTunnelThread;
 	private TunnelManagerThread mTunnelManager;
 	private ConnectivityManager connMgr;
-	
-	
+
+
 	private final IBinder mBinder = new IUltraSSHServiceInternal.Stub() {
 
         @Override
@@ -73,107 +73,104 @@ public class SocksHttpService extends Service
         }
 
     };
-	
+
 	@Override
 	public void onCreate()
 	{
 		Log.i(TAG, "onCreate");
-		
+
 		super.onCreate();
-		
+
 		mPrefs = new Settings(this);
 		mHandler = new Handler();
-		
+
 		connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		if (Build.VERSION.SDK_INT >= 26)
-			createNotificationChannel();
 	}
-	
-	
+
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		Log.i(TAG, "onStartCommand");
-		
+
 		startTunnelBroadcast();
-		
+
 		SkStatus.addStateListener(this);
-		
+
 		if (intent != null && START_SERVICE.equals(intent.getAction()))
             return START_NOT_STICKY;
-		
+
 		String stateMsg = getString(SkStatus.getLocalizedState(SkStatus.getLastState()));
-		showNotification(stateMsg, 0, ConnectionStatus.LEVEL_START, null);
-		
+		showNotification(stateMsg, NOTIFICATION_CHANNEL_NEWSTATUS_ID, 0, ConnectionStatus.LEVEL_START, null);
+
 		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				startTunnel();
-			}
-		}).start();
-		
+				@Override
+				public void run() {
+					startTunnel();
+				}
+			}).start();
+
 		//return Service.START_STICKY;
 		return Service.START_NOT_STICKY;
 	}
-	
-	
+
+
 	/**
-	* Tunnel
-	*/
-	
+	 * Tunnel
+	 */
+
 	public synchronized void startTunnel() {
-		
+
 		SkStatus.updateStateString(SkStatus.SSH_INICIANDO, getString(R.string.starting_service_ssh));
-		
+
 		networkStateChange(this, true);
-		
+
 		SkStatus.logInfo(String.format("Ip Local: %s", getIpPublic()));
-		
+
 		try {
-			
+
 			mTunnelManager = new TunnelManagerThread(mHandler, this);
 			mTunnelManager.setOnStopClienteListener(new TunnelManagerThread.OnStopCliente() {
-				@Override
-				public void onStop() {
-					endTunnelService();
-				}
-			});
-			
+					@Override
+					public void onStop() {
+						endTunnelService();
+					}
+				});
+
 			mTunnelThread = new Thread(mTunnelManager);
 			mTunnelThread.start();
-			
+
 			SkStatus.logInfo("started Tunnel Thread");
-			
+
 		} catch(Exception e) {
 			SkStatus.logException(e);
 			endTunnelService();
 		}
 	}
-	
+
 	public synchronized void stopTunnel() {
 		if (mTunnelManager != null) {
 			mTunnelManager.stopAll();
-			
+
 			networkStateChange(this, true);
-			
+
 			if (mTunnelThread != null) {
 
 				mTunnelThread.interrupt();
 
 				SkStatus.logInfo("stopped Tunnel Thread");
 			}
-			
+
 			mTunnelManager = null;
 		}
 	}
-	
+
 	protected String getIpPublic() {
-		
+
 		final android.net.NetworkInfo network = connMgr
 			.getActiveNetworkInfo();
-			
+
 		if (network != null && network.isConnectedOrConnecting()) {
 			return TunnelUtils.getLocalIpAddress();
 		}
@@ -181,9 +178,9 @@ public class SocksHttpService extends Service
             return "Indisponivel";
         }
 	}
-	
-	
-	
+
+
+
 	@Override
     public IBinder onBind(Intent intent) {
         return mBinder;
@@ -193,16 +190,16 @@ public class SocksHttpService extends Service
 	public void onDestroy()
 	{
 		Log.i(TAG, "onDestroy");
-		
+
 		super.onDestroy();
-		
+
 		stopTunnel();
-		
+
 		stopTunnelBroadcast();
-	
+
 		SkStatus.removeStateListener(this);
 	}
-	
+
 	@Override
     public void onTaskRemoved(Intent rootIntent){
 		Log.d(TAG,"task removed");
@@ -210,7 +207,7 @@ public class SocksHttpService extends Service
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent);
     }
-	
+
 	/* (non-Javadoc)
      * @see android.app.Service#onLowMemory()
      */
@@ -220,68 +217,43 @@ public class SocksHttpService extends Service
 
         SkStatus.logWarning("Low Memory Warning!");
     }
-	
+
 	public void endTunnelService() {
 		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				stopForeground(true);
-				clearNotifications();
-				
-				stopSelf();
-				SkStatus.removeStateListener(SocksHttpService.this);
-			}
-		});
+				@Override
+				public void run() {
+					stopForeground(true);
+
+					stopSelf();
+					SkStatus.removeStateListener(SocksHttpService.this);
+				}
+			});
 	}
-	
-	
+
+
 	/**
-	* Notificação
-	*/
-	
+	 * Notificação
+	 */
+
 	public static final String NOTIFICATION_CHANNEL_BG_ID = "openvpn_bg";
     public static final String NOTIFICATION_CHANNEL_NEWSTATUS_ID = "openvpn_newstat";
     public static final String NOTIFICATION_CHANNEL_USERREQ_ID = "openvpn_userreq";
-	private final static String NOTIFICATION_CHANNEL_ID = "sockshttp_channel_1";
-	
+
 	private Notification.Builder mNotifyBuilder = null;
 	private String lastChannel;
-	
-	@RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotificationChannel ()
-    {
-        NotificationManager mNotificationManager =
-			(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// The id of the channel.
 
-// The user-visible name of the channel.
-        CharSequence name = getString(R.string.app_name);
-// The user-visible description of the channel.
-        String description = getString(R.string.app_description);
-        int importance = NotificationManager.IMPORTANCE_LOW;
-        NotificationChannel mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-// Configure the notification channel.
-        mChannel.setDescription(description);
-        mChannel.enableLights(false);
-        mChannel.enableVibration(false);
-        mChannel.setShowBadge(false);
-        //mChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-        mNotificationManager.createNotificationChannel(mChannel);
-    }
-	
-	private void showNotification(final String msg,
-        	long when, ConnectionStatus status, Intent intent) {
+	private void showNotification(final String msg, final String channel,
+			long when, ConnectionStatus status, Intent intent) {
         int icon = getIconByConnectionStatus(status);
-		String channel = NOTIFICATION_CHANNEL_ID;
 
 		if (mNotifyBuilder == null) {
 			//mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-       
+
 			mNotifyBuilder = new Notification.Builder(this)
         		.setContentTitle(getString(R.string.app_name))
 				.setOnlyAlertOnce(true)
         		.setOngoing(true);
-				
+
 			// Try to set the priority available since API 16 (Jellybean)
         	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             	addVpnActionsToNotification(mNotifyBuilder);
@@ -290,17 +262,16 @@ public class SocksHttpService extends Service
         	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             	lpNotificationExtras(mNotifyBuilder, Notification.CATEGORY_SERVICE);
 		}
-        
-		/*if (channel.equals(NOTIFICATION_CHANNEL_BG_ID))
+
+	    int priority = PRIORITY_DEFAULT;
+		if (channel.equals(NOTIFICATION_CHANNEL_BG_ID))
             priority = PRIORITY_MIN;
         else if (channel.equals(NOTIFICATION_CHANNEL_USERREQ_ID))
             priority = PRIORITY_MAX;
-        else*/
-        int priority = PRIORITY_DEFAULT;
 
 		mNotifyBuilder.setSmallIcon(icon);
         mNotifyBuilder.setContentText(msg);
-		
+
 		if (status == ConnectionStatus.LEVEL_WAITING_FOR_USER_INPUT) {
             PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
             mNotifyBuilder.setContentIntent(pIntent);
@@ -308,14 +279,14 @@ public class SocksHttpService extends Service
 		else {
 			mNotifyBuilder.setContentIntent(getGraphPendingIntent(this));
 		}
-        
+
         if (when != 0)
             mNotifyBuilder.setWhen(when);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             jbNotificationExtras(priority, mNotifyBuilder);
         }
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             //noinspection NewApi
             mNotifyBuilder.setChannelId(channel);
@@ -329,23 +300,17 @@ public class SocksHttpService extends Service
 
         int notificationId = channel.hashCode();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			startForeground(notificationId, notification);
-		}
-		else if (!mNotificationShowing) {
-            startForeground(notificationId, notification);
-        }
-		else {
-			mNotificationManager.notify(notificationId, notification);
-		}
+		startForeground(notificationId, notification);
 
-		/*if (lastChannel != null && !channel.equals(lastChannel)) {
+		mNotificationManager.notify(notificationId, notification);
+
+		if (lastChannel != null && !channel.equals(lastChannel)) {
             // Cancel old notification
             mNotificationManager.cancel(lastChannel.hashCode());
         }
-		
-		lastChannel = channel;*/
-		mNotificationShowing = true;
+
+		lastChannel = channel;
+		//mNotificationShowing = true;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -353,10 +318,10 @@ public class SocksHttpService extends Service
         nbuilder.setCategory(category);
         nbuilder.setLocalOnly(true);
     }
-	
+
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void jbNotificationExtras(int priority,
-			Notification.Builder nbuilder) {
+									  Notification.Builder nbuilder) {
         try {
             if (priority != 0) {
                 Method setpriority = nbuilder.getClass().getMethod("setPriority", int.class);
@@ -372,25 +337,25 @@ public class SocksHttpService extends Service
             SkStatus.logException(e);
         }
     }
-	
+
 	@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void addVpnActionsToNotification(Notification.Builder nbuilder) {
-        
+
 		Intent reconnectVPN = new Intent(this, MainReceiver.class);
 		reconnectVPN.setAction(MainReceiver.ACTION_SERVICE_RESTART);
       	PendingIntent reconnectPendingIntent = PendingIntent.getBroadcast(this, 0, reconnectVPN, PendingIntent.FLAG_CANCEL_CURRENT);
-		
+
 		nbuilder.addAction(R.drawable.ic_autorenew_black_24dp,
-			getString(R.string.reconnect), reconnectPendingIntent);
-			
+						   getString(R.string.reconnect), reconnectPendingIntent);
+
 		Intent disconnectVPN = new Intent(this, MainReceiver.class);
 		disconnectVPN.setAction(MainReceiver.ACTION_SERVICE_STOP);
       	PendingIntent disconnectPendingIntent = PendingIntent.getBroadcast(this, 0, disconnectVPN, PendingIntent.FLAG_CANCEL_CURRENT);
 
         nbuilder.addAction(R.drawable.ic_power_settings_new_black_24dp,
-			getString(R.string.stop), disconnectPendingIntent);
+						   getString(R.string.stop), disconnectPendingIntent);
     }
-	
+
 	private int getIconByConnectionStatus(ConnectionStatus level) {
         switch (level) {
             case LEVEL_CONNECTED:
@@ -405,7 +370,7 @@ public class SocksHttpService extends Service
                 return R.drawable.ic_cloud_off_black_24dp;
         }
     }
-	
+
 	// Usado também pelo tunnel VPN
 	public static PendingIntent getGraphPendingIntent(Context context) {
         // Let the configure Button show the Log
@@ -413,43 +378,41 @@ public class SocksHttpService extends Service
         Intent intent = new Intent();
         intent.setComponent(new ComponentName(context, context.getPackageName() + ".SocksHttpMainActivity"));
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        
+
 		PendingIntent startLW = PendingIntent.getActivity(context, 0, intent, 0);
-		
+
 		return startLW;
     }
-	
-	private void clearNotifications ()
-    {
-        if (mNotificationManager != null)
-            mNotificationManager.cancelAll();
 
-        mNotificationShowing = false;
-    }
-	
+
 	/**
-	* SkStatus.StateListener
-	*/
-	
+	 * SkStatus.StateListener
+	 */
+
 	@Override
     public void updateState(String state, String msg, int resid, ConnectionStatus level, Intent intent) {
-        
+
 		// If the process is not running, ignore any state,
         // Notification should be invisible in this state
 
-        if (mTunnelThread == null && !mNotificationShowing)
+        if (mTunnelThread == null)
             return;
 
+		String channel = NOTIFICATION_CHANNEL_BG_ID;
+		if (level.equals(ConnectionStatus.LEVEL_CONNECTED)) {
+			channel = NOTIFICATION_CHANNEL_USERREQ_ID;
+		}
+
         String stateMsg = getString(SkStatus.getLocalizedState(SkStatus.getLastState()));
-        showNotification(stateMsg, 0, level, null);
+        showNotification(stateMsg, channel, 0, level, null);
     }
 
-	
-	
+
+
 	/**
-	* Tunnel Broadcast
-	*/
-	
+	 * Tunnel Broadcast
+	 */
+
 	private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
 		@Override
 		public void onAvailable(Network net) {
@@ -466,62 +429,62 @@ public class SocksHttpService extends Service
 			SkStatus.logDebug("Rede indisponivel");
 		}
 	};
-	
+
 	public static final String TUNNEL_SSH_RESTART_SERVICE = SocksHttpService.class.getName() + "::restartservicebroadcast",
-		TUNNEL_SSH_STOP_SERVICE = SocksHttpService.class.getName() + "::stopservicebroadcast";
-	
+	TUNNEL_SSH_STOP_SERVICE = SocksHttpService.class.getName() + "::stopservicebroadcast";
+
 	private void startTunnelBroadcast() {
 		if (Build.VERSION.SDK_INT >= 24) {
 			connMgr.registerDefaultNetworkCallback(networkCallback);
 		}
-		
+
 		IntentFilter broadcastFilter = new IntentFilter();
 		broadcastFilter.addAction(TUNNEL_SSH_STOP_SERVICE);
 		broadcastFilter.addAction(TUNNEL_SSH_RESTART_SERVICE);
-		
+
 		LocalBroadcastManager.getInstance(this)
 			.registerReceiver(mTunnelSSHBroadcastReceiver, broadcastFilter);
 	}
-	
+
 	private void stopTunnelBroadcast() {
 		LocalBroadcastManager.getInstance(this)
 			.unregisterReceiver(mTunnelSSHBroadcastReceiver);
-		
+
 		if (Build.VERSION.SDK_INT >= 24)
 			connMgr.unregisterNetworkCallback(networkCallback);
 	}
-	
+
 	private BroadcastReceiver mTunnelSSHBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			final String action = intent.getAction();
-			
+
 			if (action == null) {
 				return;
 			}
-			
+
 			if (action.equals(TUNNEL_SSH_RESTART_SERVICE)) {
 				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						if (mTunnelManager != null) {
-							mTunnelManager.reconnectSSH();
+						@Override
+						public void run() {
+							if (mTunnelManager != null) {
+								mTunnelManager.reconnectSSH();
+							}
 						}
-					}
-				}).start();
+					}).start();
 			}
-			
+
 			else if (action.equals(TUNNEL_SSH_STOP_SERVICE)) {
 				endTunnelService();
 			}
 		}
 	};
-	
+
 	private static String lastStateMsg;
 
 	protected void networkStateChange(Context context, boolean showStatusRepetido) {
 		String netstatestring;
-		
+
 		try {
 			// deprecated in 29
 			NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -547,9 +510,9 @@ public class SocksHttpService extends Service
 
 
 				netstatestring = String.format("%2$s %4$s to %1$s %3$s", networkInfo.getTypeName(),
-					networkInfo.getDetailedState(), extrainfo, subtype);
+											   networkInfo.getDetailedState(), extrainfo, subtype);
 			}
-			
+
 		} catch (Exception e) {
 			netstatestring = e.getMessage();
 		}
