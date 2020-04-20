@@ -36,8 +36,6 @@
 	<string name="summary_mode_debug">Permite ver informações mais avançadas nos logs.</string>
 	<string name="title_number_max_threads">Número Máximo de Threads</string>
 	<string name="summary_number_max_threads">Quanto maior o número de Threads maior será o consumo de energia e a velocidade da conexão no seu dispositivo.</string>
-	<string name="title_mode_vpn">Enviar Tráfego pela VPN</string>
-	<string name="summary_mode_vpn">Se ativo todo o tráfego será enviado pela VPN.</string>
 	<string name="category_filter_apps">Filtro de Apps</string>
 	<string name="title_filter_apps">Filtrar Apps</string>
 	<string name="title_bypass_mode">Bypass Mode</string>
@@ -52,8 +50,6 @@
 	<string name="category_tunnel">Túnnel</string>
 	
 	<!-- novo -->
-	<string name="title_tethering_subnet">Tethering Subnet (beta)</string>
-	<string name="summary_tethering_subnet">Habilite se estiver tendo problemas para compartilhar a internet do seu dispositivo.</string>
 	
 	<string name="ssh_server">Servidor</string>
 	<string name="ssh_port">Porta</string>
@@ -147,5 +143,7 @@
 	<string name="error_userpass_empty">Digite o usuário/senha fornecida pelo criador da configuracão</string>
 	<string name="title_disable_delay_ssh">Desativar TCP Delay</string>
 	<string name="summary_disable_delay_ssh">Se ativo não haverá delays entre requisições, o quê pode melhorar o ping ou até mesmo a velocidade da conexão.</string>
+	<string name="title_tethering_subnet">Tethering Subnet (beta)</string>
+	<string name="summary_tethering_subnet">Habilite se estiver tendo problemas para compartilhar a internet do seu dispositivo.</string>
 	
 </resources>

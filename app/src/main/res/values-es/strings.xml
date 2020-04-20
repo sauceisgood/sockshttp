@@ -141,5 +141,7 @@
 	<string name="error_userpass_empty">Digite o usuário/senha fornecida pelo criador da configuracão</string>
 	<string name="title_disable_delay_ssh">Desativar TCP Delay</string>
 	<string name="summary_disable_delay_ssh">Se ativo não haverá delays entre requisições, o quê pode melhorar o ping ou até mesmo a velocidade da conexão.</string>
+	<string name="title_tethering_subnet">Tethering Subnet (beta)</string>
+	<string name="summary_tethering_subnet">Habilite se estiver tendo problemas para compartilhar a internet do seu dispositivo.</string>
 	
 </resources>
