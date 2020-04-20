@@ -26,7 +26,7 @@ dependencies {
         force = true
     }*/
 	
-	compile 'com.android.support:appcompat-v7:25.+'
+	compile 'com.android.support:appcompat-v7:27.1.1'
 	
 	//api 'org.connectbot:sshlib:2.2.9'
 	//api 'com.github.SandroMachado:AndroidTampering:1.0.3'
