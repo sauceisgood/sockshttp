@@ -136,4 +136,10 @@
 	<string name="success_import_settings">Archivo importado</string>
 	<string name="success_export_settings">Configuración exportada</string>
 	
+	<!-- Ainda Falta Traduzir -->
+	<string name="title_agradecimento_especial">Agradecimento especial para</string>
+	<string name="error_userpass_empty">Digite o usuário/senha fornecida pelo criador da configuracão</string>
+	<string name="title_disable_delay_ssh">Desativar TCP Delay</string>
+	<string name="summary_disable_delay_ssh">Se ativo não haverá delays entre requisições, o quê pode melhorar o ping ou até mesmo a velocidade da conexão.</string>
+	
 </resources>

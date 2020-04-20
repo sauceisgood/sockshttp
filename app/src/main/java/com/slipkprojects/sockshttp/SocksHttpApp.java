@@ -16,8 +16,6 @@ import android.util.Log;
 import com.google.android.gms.ads.MobileAds;
 import android.content.res.Configuration;
 import com.slipkprojects.sockshttp.preference.LocaleHelper;
-import com.flurry.android.FlurryAgent;
-import com.flurry.android.FlurryPerformance;
 
 /**
 * App
@@ -43,12 +41,12 @@ public class SocksHttpApp extends Application
 		mApp = this;
 		
 		// captura dados para análise
-		new FlurryAgent.Builder()
+		/*new FlurryAgent.Builder()
 			.withCaptureUncaughtExceptions(true)
             .withIncludeBackgroundSessionsInMetrics(true)
             .withLogLevel(Log.VERBOSE)
             .withPerformanceMetrics(FlurryPerformance.ALL)
-			.build(this, APP_FLURRY_KEY);
+			.build(this, APP_FLURRY_KEY);*/
 			
 		// inicia
 		SocksHttpCore.init(this);
