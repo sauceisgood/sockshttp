@@ -40,7 +40,7 @@ dependencies {
 	
 	//11.8.0
 	//api 'com.scottyab:secure-preferences-lib:0.1.7'
-	compile 'com.google.android.gms:play-services-ads-lite:17.+'
+	compile 'com.google.android.gms:play-services-ads-lite:15.0.1'
 	//compile 'com.flurry.android:analytics:12.3.0'
 	//api 'com.flurry.android:analytics:12.1.0'
 	//api 'com.android.support:multidex:1.0.3'
